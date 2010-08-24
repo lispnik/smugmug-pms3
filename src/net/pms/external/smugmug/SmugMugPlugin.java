@@ -1,3 +1,21 @@
+/*
+ * smugmug-pms3, a ps3mediaserver DLNA plugin for the SmugMug photo hosting service
+ * Copyright (C) 2010  Matthew Kennedy
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ */
 package net.pms.external.smugmug;
 
 import java.io.File;
@@ -21,7 +39,11 @@ public class SmugMugPlugin implements AdditionalFolderAtRoot {
 	}
 	
 	public SmugMugPlugin() {
-		PMS.info("Loading SmugMug Plugin");
+		PMS.info("Loading smugmug-pms3 Plugin");
+		System.err.println("smugmug-pms3 Plugin, Copyright (C) 2010 Matthew Kennedy"
+				+ "smugmug-pms3 comes with ABSOLUTELY NO WARRANTY"
+				+ "This is free software, and you are welcome to redistribute it"
+				+ "under the GNU GENERAL PUBLIC LICENSE Version 2");
 		// FIXME allow selection of smugmug configuration through GUI
 		final File file = new File(System.getProperty("user.home"), ".smugmug.properties");
 		PMS.info("Reading account configurations from: " + file);
