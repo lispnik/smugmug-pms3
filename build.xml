@@ -1,0 +1,41 @@
+<project name="smugmug-pms3" default="dist" basedir=".">
+	<property file="build.properties"/>
+	<property name="version" value="0.1"/>
+	
+	<target name="prepare">
+		<mkdir dir="classes"/>
+		<mkdir dir="dist"/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="classes"/>
+		<delete dir="dist"/>
+		<delete file="smugmug-pms3-${version}.zip"/>
+	</target>		
+	
+	<path id="build.classpath">
+		<fileset dir="lib" includes="*.jar"/>
+		<path location="${pms3.home}/pms.jar"/>
+	</path>
+	
+	<target name="compile" depends="prepare">
+		<javac classpathref="build.classpath" debug="true" debuglevel="source,line,vars" source="1.6" target="1.6"
+			srcdir="src" destdir="classes"/>
+		<copy todir="classes">
+			<fileset dir="src" includes="plugin,**/*.properties"/>
+		</copy>
+	</target>
+	
+    <target name="build" depends="compile">
+		<copy todir="dist">
+			<fileset dir="lib" includes="*.jar"/>
+    	</copy>
+    	<jar destfile="dist/smugmug-pms3-${version}.jar" basedir="classes"/>
+    </target>
+	
+	<target name="dist" depends="build">
+		<zip destfile="smugmug-pms3-${version}.zip">
+			<zipfileset dir="dist" includes="**/*.*" prefix="plugins"/>
+		</zip>
+	</target>
+</project>
