@@ -40,9 +40,9 @@ public class SmugMugPlugin implements AdditionalFolderAtRoot {
 	
 	public SmugMugPlugin() {
 		PMS.info("Loading smugmug-pms3 Plugin");
-		System.err.println("smugmug-pms3 Plugin, Copyright (C) 2010 Matthew Kennedy"
-				+ "smugmug-pms3 comes with ABSOLUTELY NO WARRANTY"
-				+ "This is free software, and you are welcome to redistribute it"
+		System.err.println("smugmug-pms3 Plugin, Copyright (C) 2010 Matthew Kennedy\n"
+				+ "smugmug-pms3 comes with ABSOLUTELY NO WARRANTY\n"
+				+ "This is free software, and you are welcome to redistribute it\n"
 				+ "under the GNU GENERAL PUBLIC LICENSE Version 2");
 		// FIXME allow selection of smugmug configuration through GUI
 		final File file = new File(System.getProperty("user.home"), ".smugmug.properties");
