@@ -19,7 +19,6 @@
 package net.pms.external.smugmug;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -75,13 +74,7 @@ public class SmugMugPlugin implements AdditionalFolderAtRoot {
 
 	@Override
 	public DLNAResource getChild() {
-		VirtualFolder folder = new VirtualFolder("SmugMug Accounts", null) {
-			@Override
-			public InputStream getThumbnailInputStream() {
-				// FIXME find a logo image ...
-				return super.getThumbnailInputStream();
-			}
-		};
+		VirtualFolder folder = new VirtualFolder("SmugMug Accounts", null);
 		try {
 			for (Account account : ACCOUNT.values()) {
 				AccountFolder accountFolder = new AccountFolder(account.getId());

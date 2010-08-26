@@ -46,7 +46,6 @@ public class AlbumFolder extends VirtualFolder {
 
 	public AlbumFolder(String id, int albumId, String albumKey, String title, Predicate<Image> predicate) {
 		super(title, null);
-		// FIXME get the thumbnail for the feature photo
 		this.id = id;
 		this.albumId = albumId;
 		this.albumKey = albumKey;
