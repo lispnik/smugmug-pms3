@@ -49,7 +49,7 @@ public class RecentAdditionsFolder extends VirtualFolder {
 	public RecentAdditionsFolder(String id) {
 		super("Recent Photos", null);
 		this.accountId = id;
-		dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+		dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
 
@@ -66,14 +66,15 @@ public class RecentAdditionsFolder extends VirtualFolder {
 			PMS.error("Error getting albums: " + response.getError(), null);
 			return;
 		}
-		final Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-		calendar.roll(Calendar.MONTH, -1); // FIXME move this out to configuration file
+		Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+		calendar.add(Calendar.MONTH, -1); // FIXME move this out to configuration file
+		final Date target = calendar.getTime();
 		Iterable<Album> albums = filter(response.getAlbumList(), new Predicate<Album>() {
 			@Override
 			public boolean apply(Album album) {
 				try {
 					Date date = dateFormat.parse(album.getLastUpdated());
-					return calendar.before(date);
+					return date.getTime() > target.getTime();
 				} catch (Exception e) {
 					PMS.error("Error parsing last updated date: " + album.getLastUpdated(), e);
 					return false;
@@ -85,7 +86,7 @@ public class RecentAdditionsFolder extends VirtualFolder {
 			public boolean apply(Image image) {
 				try {
 					Date date = dateFormat.parse(image.getLastUpdated());
-					return calendar.before(date);
+					return date.getTime() > target.getTime();
 				} catch (ParseException e) {
 					PMS.error("Error parsing image last updated date: " + image.getLastUpdated(), e);
 					return false;
