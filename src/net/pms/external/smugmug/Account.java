@@ -97,4 +97,9 @@ public class Account {
 						getPassword());
 		}
 	}
+
+	public String getNickName() {
+		maybeRefresh();
+		return withPasswordResponse.getNickName();
+	}
 }

@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/logback-core-0.9.8.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.4.3.jar"/>
 	<classpathentry kind="lib" path="lib/smugmug-java-api-0.6.0.jar"/>
+	<classpathentry kind="lib" path="lib/guava-r06.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -18,13 +18,91 @@
  */
 package net.pms.external.smugmug;
 
+import static com.google.common.collect.Iterables.filter;
+import static net.pms.external.smugmug.SmugMugPlugin.getAccount;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
+import net.pms.PMS;
 import net.pms.dlna.virtual.VirtualFolder;
 
-public class RecentAdditionsFolder extends VirtualFolder {
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.kallasoft.smugmug.api.json.entity.Album;
+import com.kallasoft.smugmug.api.json.entity.Image;
+import com.kallasoft.smugmug.api.json.v1_2_1.APIVersionConstants;
+import com.kallasoft.smugmug.api.json.v1_2_1.albums.Get;
+import com.kallasoft.smugmug.api.json.v1_2_1.albums.Get.GetResponse;
 
+public class RecentAdditionsFolder extends VirtualFolder {
+	
+	private final String accountId;
+	private final DateFormat dateFormat;
+	
 	public RecentAdditionsFolder(String id) {
-		super("Recent Addtions", null);
-		// FIXME add some kind of thumb nail
+		super("Recent Photos", null);
+		this.accountId = id;
+		dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
 
+	@Override
+	public void discoverChildren() {
+		super.discoverChildren();
+		Account account = getAccount(accountId);
+		Get get = new Get();
+		GetResponse response = get.execute(APIVersionConstants.UNSECURE_SERVER_URL, 
+				account.getApikey(), 
+				account.getSessionId(), 
+				true);
+		if (response.isError()) {
+			PMS.error("Error getting albums: " + response.getError(), null);
+			return;
+		}
+		final Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+		calendar.roll(Calendar.MONTH, -1); // FIXME move this out to configuration file
+		Iterable<Album> albums = filter(response.getAlbumList(), new Predicate<Album>() {
+			@Override
+			public boolean apply(Album album) {
+				try {
+					Date date = dateFormat.parse(album.getLastUpdated());
+					return calendar.before(date);
+				} catch (Exception e) {
+					PMS.error("Error parsing last updated date: " + album.getLastUpdated(), e);
+					return false;
+				}
+			}}); 
+
+		final Predicate<Image> predicate = new Predicate<Image>() {
+			@Override
+			public boolean apply(Image image) {
+				try {
+					Date date = dateFormat.parse(image.getLastUpdated());
+					return calendar.before(date);
+				} catch (ParseException e) {
+					PMS.error("Error parsing image last updated date: " + image.getLastUpdated(), e);
+					return false;
+				}
+			}};
+			
+		for (AlbumFolder folder : Iterables.transform(albums, new Function<Album, AlbumFolder>() {
+				@Override
+				public AlbumFolder apply(Album album) {
+					return new AlbumFolder(accountId, album.getID(), album.getAlbumKey(), album.getTitle(), predicate);
+				}})) {
+			addChild(folder);
+		}
+	}
+
+	@Override
+	public String toString() {
+		return String.format("RecentAdditionsFolder [accountId=%s]", accountId);
+	}
 }
