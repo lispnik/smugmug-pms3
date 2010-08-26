@@ -1,6 +1,6 @@
 <project name="smugmug-pms3" default="dist" basedir=".">
 	<property file="build.properties"/>
-	<property name="version" value="0.1"/>
+	<property name="version" value="0.2"/>
 	
 	<target name="prepare">
 		<mkdir dir="classes"/>
@@ -30,6 +30,8 @@
 		<copy todir="dist">
 			<fileset dir="lib" includes="*.jar"/>
     	</copy>
+    	<copy file="README" tofile="dist/README.smugmug-pms3"/>
+    	<copy file="COPYING" tofile="dist/COPYING.smugmug-pms3"/>
     	<jar destfile="dist/smugmug-pms3-${version}.jar" basedir="classes"/>
     </target>
 	
