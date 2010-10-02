@@ -26,7 +26,7 @@ listed in the plugins section.
 Configuration
 -------------
 
-Configuration is done via simple properties file.  Create a file named `.smugmug.properties` 
+Configuration is done via simple properties file.  Create a file named `.smugmug-psm3.properties` 
 in your user home directory (`%USERPROFILE%` on Windows, `$HOME` on GNU/Linux/Unix) 
 and list your accounts within it. e.g.
 

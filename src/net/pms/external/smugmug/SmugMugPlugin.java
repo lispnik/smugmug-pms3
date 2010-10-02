@@ -44,7 +44,7 @@ public class SmugMugPlugin implements AdditionalFolderAtRoot {
 				+ "** This is free software, and you are welcome to redistribute it\n"
 				+ "** under the GNU GENERAL PUBLIC LICENSE Version 2");
 		// FIXME allow selection of smugmug configuration through GUI
-		final File file = new File(System.getProperty("user.home"), ".smugmug.properties");
+		final File file = new File(System.getProperty("user.home"), ".smugmug-psm3.properties");
 		PMS.info("Reading account configurations from: " + file);
 		try {
 			Configuration configuration = new Configuration(file);
