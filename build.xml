@@ -1,6 +1,7 @@
 <project name="smugmug-pms3" default="dist" basedir=".">
+	<property file="${user.home}/build.properties"/>
 	<property file="build.properties"/>
-	<property name="version" value="0.2"/>
+	<property file="src/version.properties"/>
 	
 	<target name="prepare">
 		<mkdir dir="classes"/>
@@ -20,7 +21,7 @@
 	
 	<target name="compile" depends="prepare">
 		<javac classpathref="build.classpath" debug="true" debuglevel="source,line,vars" source="1.6" target="1.6"
-			srcdir="src" destdir="classes"/>
+			srcdir="src" destdir="classes" includeantruntime="false"/>
 		<copy todir="classes">
 			<fileset dir="src" includes="plugin,**/*.properties"/>
 		</copy>
@@ -30,9 +31,13 @@
 		<copy todir="dist">
 			<fileset dir="lib" includes="*.jar"/>
     	</copy>
-    	<copy file="README" tofile="dist/README.smugmug-pms3"/>
+    	<copy file="README.markdown" tofile="dist/README.smugmug-pms3"/>
     	<copy file="COPYING" tofile="dist/COPYING.smugmug-pms3"/>
-    	<jar destfile="dist/smugmug-pms3-${version}.jar" basedir="classes"/>
+    	<jar destfile="dist/smugmug-pms3-${version}.jar" basedir="classes">
+    		<manifest>
+    			<attribute name="SmugMug-PMS3-Version" value="${version}"/>
+    		</manifest>
+		</jar>
     </target>
 	
 	<target name="dist" depends="build">

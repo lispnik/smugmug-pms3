@@ -19,6 +19,9 @@
 package net.pms.external.smugmug;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -33,13 +36,16 @@ public class SmugMugPlugin implements AdditionalFolderAtRoot {
 	
 	private static final SortedMap<String, Account> ACCOUNT = new TreeMap<String, Account>();
 	
+	private final String version;
+	
 	public static Account getAccount(String id) {
 		return ACCOUNT.get(id);
 	}
 	
 	public SmugMugPlugin() {
 		PMS.info("Loading smugmug-pms3 Plugin");
-		System.err.println("** smugmug-pms3 Plugin, Copyright (C) 2010 Matthew Kennedy\n"
+		this.version = getVersion();
+		System.err.println("** smugmug-pms3 " + version + " Plugin, Copyright (C) 2010 Matthew Kennedy\n"
 				+ "** smugmug-pms3 comes with ABSOLUTELY NO WARRANTY\n"
 				+ "** This is free software, and you are welcome to redistribute it\n"
 				+ "** under the GNU GENERAL PUBLIC LICENSE Version 2");
@@ -54,6 +60,24 @@ public class SmugMugPlugin implements AdditionalFolderAtRoot {
 			PMS.error("Error reading configuration", e);
 		}
 	}
+	
+	private String getVersion() {
+		Properties properties = new Properties();
+		InputStream input = null;
+		try {
+			input = getClass().getClassLoader().getResourceAsStream("version.properties");
+			properties.load(input);
+			return properties.getProperty("version");
+		} catch (IOException e) {
+			throw new RuntimeException("Error reading version string", e);
+		} finally {
+			if (input != null) 
+				try {
+					input.close();
+				} catch (IOException e) {
+				}
+		}
+	}
 
 	@Override
 	public JComponent config() {
@@ -63,7 +87,7 @@ public class SmugMugPlugin implements AdditionalFolderAtRoot {
 
 	@Override
 	public String name() {
-		return "SmugMug Plugin";
+		return "SmugMug Plugin " + version;
 	}
 
 	@Override
