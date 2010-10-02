@@ -11,7 +11,7 @@ entire SmugMug photo collection on your TV.
 Prerequisites
 -------------
 
-ps3mediaserver http://code.google.com/p/ps3mediaserver/
+ps3mediaserver http://code.google.com/p/ps3mediaserver/ (the BETA version).
 
 Installation
 ------------
