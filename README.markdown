@@ -26,9 +26,9 @@ listed in the plugins section.
 Configuration
 -------------
 
-Configuration is done via simple properties file.  Create a file in your user
-home directory (`%USERPROFILE%` on Windows, `$HOME` on GNU/Linux/Unix) and list
-your accounts within it. e.g.
+Configuration is done via simple properties file.  Create a file named `.smugmug.properties` 
+in your user home directory (`%USERPROFILE%` on Windows, `$HOME` on GNU/Linux/Unix) 
+and list your accounts within it. e.g.
 
 	smugmug.account1.email=yoursmugmugemail@example.com
 	smugmug.account1.password=secret
