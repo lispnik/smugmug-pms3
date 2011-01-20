@@ -18,9 +18,7 @@
  */
 package net.pms.external.smugmug;
 
-import java.util.List;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import static net.pms.external.smugmug.SmugMugPlugin.getAccount;
 import net.pms.PMS;
@@ -32,6 +30,10 @@ import com.kallasoft.smugmug.api.json.v1_2_1.APIVersionConstants;
 import com.kallasoft.smugmug.api.json.v1_2_1.albums.Get;
 import com.kallasoft.smugmug.api.json.v1_2_1.albums.Get.GetResponse;
 
+import net.pms.external.smugmug.CategoryFolder.AlbumList;
+import net.pms.external.smugmug.CategoryFolder.Cat;
+import net.pms.external.smugmug.CategoryFolder.CatListMap;
+
 public class AccountFolder extends VirtualFolder {
 
 	private String accountId;
@@ -40,13 +42,6 @@ public class AccountFolder extends VirtualFolder {
 		super(SmugMugPlugin.getAccount(id).getName(), null);
 		this.accountId = id;
 	}
-
-	private class Cat {
-		CategoryFolder.SubCatMap  subCats = new CategoryFolder.SubCatMap();
-		CategoryFolder.AlbumSet   albums = new CategoryFolder.AlbumSet();	// not in sub-category
-	}
-	
-	private class CatMap extends TreeMap<String,Cat> { };
 
 	@Override
 	public void discoverChildren() {
@@ -66,25 +61,30 @@ public class AccountFolder extends VirtualFolder {
 		// categories
 		// Some albums in categories have subcategories, some don't.
 		// Sort them into our structures.
-		final CatMap catMap = new CatMap();
+		final CatListMap catMap = new CatListMap();
 		for (Album album : getResponse.getAlbumList()) {
-			Cat cat = catMap.get(album.getCategory().getName());
+			Cat cat;
+			// get or create the Cat representation
+			cat = catMap.get(album.getCategory().getName());
 			if (cat == null) {
 				cat = new Cat();
 				catMap.put(album.getCategory().getName(), cat);
 			}
+
+			// is a subcatagory specified?
 			Category subCat = album.getSubCategory();
 			if (subCat == null) {
 				cat.albums.add(album);
 			} else {
+				// get or create the subCat representation
 				String scName = subCat.getName();
-				CategoryFolder.AlbumSet scAlbums = cat.subCats.get(scName);
-				if (scAlbums == null)
-				{
-					scAlbums = new CategoryFolder.AlbumSet();
-					cat.subCats.put(scName, scAlbums);
+				Cat sub = cat.subCats.get(scName);
+				if (sub == null) {
+					sub = new Cat();
+					cat.subCats.put(scName, sub);
 				}
-				scAlbums.add(album);
+
+				sub.albums.add(album);
 			}
 		}
 

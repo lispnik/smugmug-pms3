@@ -18,10 +18,9 @@
  */
 package net.pms.external.smugmug;
 
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import net.pms.dlna.virtual.VirtualFolder;
 
@@ -30,23 +29,18 @@ import com.kallasoft.smugmug.api.json.entity.Album;
 public class CategoryFolder extends VirtualFolder {
 
 	// To avoid writing these nested generics.
-	static class SubCatMap extends TreeMap<String,AlbumSet> { };
-	static class AlbumSet extends TreeSet<Album> {
-		AlbumSet() {
-			super(new Comparator<Album>() {
-				@Override
-				public int compare(Album o1, Album o2) {
-					return o1.getTitle().compareTo(o2.getTitle());
-				}
-			});
-		}
-	};
-
+	static class AlbumList extends ArrayList<Album> { };
+	static class CatListMap extends LinkedHashMap<String,Cat> { };
+	static class Cat {	// cat or sub-cat
+		CatListMap	subCats = new CatListMap();
+		AlbumList	albums = new AlbumList();
+	}
+	
 	private final String accountId;
-	private SubCatMap	subCats;
-	private AlbumSet	albums;
+	private CatListMap	subCats;
+	private AlbumList	albums;
 
-	public CategoryFolder(String accountId, String name, SubCatMap subCats, AlbumSet albums) {
+	public CategoryFolder(String accountId, String name, CatListMap subCats, AlbumList albums) {
 		super(name, null);
 		this.accountId = accountId;
 		this.subCats = subCats;
@@ -59,8 +53,8 @@ public class CategoryFolder extends VirtualFolder {
 
 		// subcategories
 		if (subCats != null) {
-			for (Entry<String,AlbumSet> sub : subCats.entrySet()) {
-				addChild(new CategoryFolder(accountId, sub.getKey(), null, sub.getValue()));
+			for (Entry<String,Cat> sub : subCats.entrySet()) {
+				addChild(new CategoryFolder(accountId, sub.getKey(), null, sub.getValue().albums));
 			}
 		}
 
