@@ -38,7 +38,7 @@ public class Account {
 
 	static SmugSize getSmugSize(String size) {
 		if (size == null)
-			return SmugSize.MEDIUM;			// default
+			return SmugSize.LARGE;			// default
 		else if ("x3large".equalsIgnoreCase(size))
 			return SmugSize.X3LARGE;
 		else if ("x2large".equalsIgnoreCase(size))
@@ -56,7 +56,7 @@ public class Account {
 		else if ("tiny".equalsIgnoreCase(size))
 			return SmugSize.TINY;
 		else 
-			return SmugSize.MEDIUM;			// default
+			return SmugSize.LARGE;			// default
 	}
 	
 	final private String id;

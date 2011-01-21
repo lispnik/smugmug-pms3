@@ -47,7 +47,7 @@ and list your accounts within it. e.g.
 	# optional, default is nickname or email
 	smugmug.account1.name=prettyNameShownOnYourClient
 
-	# optional, default is Medium
+	# optional, default is Large
 	# Original, X3Large, X2Large, XLarge, Large, Medium, Small, Thumb, Tiny
 	smugmug.account1.imagesize=X2Large
 	
