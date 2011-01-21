@@ -82,14 +82,17 @@ public class AlbumFolder extends VirtualFolder {
 	}
 
 	String getBestURL(Image im) {
-		// System.err.println("thumb: " + im.getThumbURL());
-
+		// Starting at the preferred size,
+		// try successively smaller urls until we get one.
 		SmugSize sz = SmugMugPlugin.getAccount(id).getSmugSize();
 		String url = null;
 		while (url == null)
 		{
 			switch(sz)
 			{
+				case ORIGINAL:
+					url = im.getOriginalURL();
+					break;
 				case X3LARGE:
 					url = im.getX3LargeURL();
 					break;
@@ -107,9 +110,15 @@ public class AlbumFolder extends VirtualFolder {
 					break;
 				case SMALL:
 					url = im.getSmallURL();
-					return url;
+					break;
+				case THUMB:
+					url = im.getThumbURL();
+					break;
+				case TINY:
+					url = im.getTinyURL();
+					break;
 				default:
-					return url;
+					return null;
 			}
 			// sz++;
 			sz = SmugSize.values()[sz.ordinal() + 1];

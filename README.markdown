@@ -33,6 +33,13 @@ and list your accounts within it. e.g.
 	smugmug.account1.email=yoursmugmugemail@example.com
 	smugmug.account1.password=secret
 	smugmug.account1.apikey=123123123123123123123132
+
+	# optional, default is email
+	smugmug.account1.name=prettyNameShownOnYourClient
+
+	# optional, default is Medium
+	# Original, X3Large, X2Large, XLarge, Large, Medium, Small, Thumb, Tiny
+	smugmug.account1.imagesize=X2Large
 	
 You can find your API key on the Control Panel page on SmugMug when you login.
 

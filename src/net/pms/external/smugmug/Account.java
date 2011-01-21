@@ -31,12 +31,12 @@ public class Account {
 	private static final long REFRESH_INTERVAL = 60 * 60 * 1000; // 60 minutes
 	public enum SmugSize {
 		// largest to smallest
-		X3LARGE, X2LARGE, XLARGE, LARGE, MEDIUM, SMALL, INVALID
+		ORIGINAL, X3LARGE, X2LARGE, XLARGE, LARGE, MEDIUM, SMALL, THUMB, TINY, INVALID
 	}
 
 	static SmugSize getSmugSize(String size) {
 		if (size == null)
-			return SmugSize.MEDIUM;
+			return SmugSize.MEDIUM;			// default
 		else if ("x3large".equalsIgnoreCase(size))
 			return SmugSize.X3LARGE;
 		else if ("x2large".equalsIgnoreCase(size))
@@ -49,8 +49,12 @@ public class Account {
 			return SmugSize.MEDIUM;
 		else if ("small".equalsIgnoreCase(size))
 			return SmugSize.SMALL;
+		else if ("thumb".equalsIgnoreCase(size))
+			return SmugSize.THUMB;
+		else if ("tiny".equalsIgnoreCase(size))
+			return SmugSize.TINY;
 		else 
-			return SmugSize.MEDIUM;
+			return SmugSize.MEDIUM;			// default
 	}
 	
 	final private String id;
