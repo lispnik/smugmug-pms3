@@ -52,7 +52,9 @@ public class AccountFolder extends VirtualFolder {
 		final GetResponse getResponse = get.execute(APIVersionConstants.UNSECURE_SERVER_URL, 
 				account.getApikey(), 
 				account.getSessionId(), 
-				false);
+				account.getNickname(),
+				false,
+				null);
 		if (getResponse.isError()) {
 			PMS.error("Error getting album list: " + getResponse.getError(), null);
 			return;

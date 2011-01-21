@@ -30,11 +30,21 @@ Configuration is done via simple properties file.  Create a file named `.smugmug
 in your user home directory (`%USERPROFILE%` on Windows, `$HOME` on GNU/Linux/Unix) 
 and list your accounts within it. e.g.
 
-	smugmug.account1.email=yoursmugmugemail@example.com
-	smugmug.account1.password=secret
+	# required
 	smugmug.account1.apikey=123123123123123123123132
 
-	# optional, default is email
+	# either the email & password pair or a nickname is required
+
+	# optional, to login for "Owner View" of your account
+	# otherwise you'll see the "Visitor View"
+	smugmug.account1.email=yoursmugmugemail@example.com
+	smugmug.account1.password=secret
+
+	# optional, the nickname of the account to display
+	# if not set, you default to your login account
+	smugmug.account1.nickname=nick
+
+	# optional, default is nickname or email
 	smugmug.account1.name=prettyNameShownOnYourClient
 
 	# optional, default is Medium

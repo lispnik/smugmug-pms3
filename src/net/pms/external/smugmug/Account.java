@@ -23,6 +23,8 @@ import java.util.Date;
 import net.pms.PMS;
 
 import com.kallasoft.smugmug.api.json.v1_2_1.APIVersionConstants;
+import com.kallasoft.smugmug.api.json.v1_2_1.login.Anonymously;
+import com.kallasoft.smugmug.api.json.v1_2_1.login.Anonymously.AnonymouslyResponse;
 import com.kallasoft.smugmug.api.json.v1_2_1.login.WithPassword;
 import com.kallasoft.smugmug.api.json.v1_2_1.login.WithPassword.WithPasswordResponse;
 
@@ -60,6 +62,7 @@ public class Account {
 	final private String id;
 	final private String email;
 	final private String password;
+	final private String nickname;
 	final private String name;
 	final private String apikey;
 	final private String imagesize;
@@ -68,9 +71,10 @@ public class Account {
 	@Override
 	public String toString() {
 		return String.format(
-				"Account [id=%s, email=%s, refresh=%s, sessionId=%s]", 
+				"Account [id=%s, email=%s, nick=%, refresh=%s, sessionId=%s]", 
 				id,
 				email, 
+				nickname,
 				refresh, 
 				withPasswordResponse != null 
 					? withPasswordResponse.getSessionID() 
@@ -79,11 +83,13 @@ public class Account {
 
 	private Date refresh = new Date(0L);
 	private WithPasswordResponse withPasswordResponse; 
+	private AnonymouslyResponse anonResponse; 
 	
-	public Account(String id, String apikey, String email, String password, String name, String imagesize) {
+	public Account(String id, String apikey, String email, String password, String nickname, String name, String imagesize) {
 		this.id = id;
 		this.email = email;
 		this.password = password;
+		this.nickname = nickname;
 		this.name = name;
 		this.apikey = apikey;
 		this.imagesize = imagesize;
@@ -98,8 +104,17 @@ public class Account {
 		return password;
 	}
 
+	public String getNickname() {
+		return nickname;
+	}
+
 	public String getName() {
-		return name == null ? getEmail() : name; 
+		if (name != null)
+			return name;
+		// one of these two must be set
+		if (getNickname() != null)
+			return getNickname();
+		return getEmail();
 	}
 
 	public String getApikey() {
@@ -120,21 +135,32 @@ public class Account {
 	
 	public String getSessionId() {
 		maybeRefresh();
-		return withPasswordResponse.getSessionID();
+		if (anonResponse != null)
+			return anonResponse.getSessionID();
+		else
+			return withPasswordResponse.getSessionID();
 	}
 
 	private void maybeRefresh() {
 		Date current = new Date();
-		final long interval = refresh.getTime() - current.getTime();
-		if (withPasswordResponse == null || interval > REFRESH_INTERVAL) {
-			PMS.info("Refresh interval exceeded (" + interval / 1000 + " seconds since last refresh)");
-			refresh = current;
+		final long interval = current.getTime() - refresh.getTime();
+
+		if (interval <= REFRESH_INTERVAL)
+			return;
+
+		PMS.info("Refresh interval exceeded (" + interval / 1000 + " seconds since last refresh)");
+		refresh = current;
+		if (getEmail() != null && getPassword() != null) {
 			WithPassword withPassword = new WithPassword();
 			withPasswordResponse = 
 				withPassword.execute(APIVersionConstants.SECURE_SERVER_URL, 
 						getApikey(), 
 						getEmail(), 
 						getPassword());
+		} else {
+			Anonymously anon = new Anonymously();
+			anonResponse = anon.execute(APIVersionConstants.SECURE_SERVER_URL, 
+						getApikey());
 		}
 	}
 

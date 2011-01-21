@@ -67,7 +67,7 @@ public class Configuration {
 		}
 		account = new LinkedList<Account>();
 		for (ParserAccount parserAccount : parse2(parse1(properties))) 
-			account.add(new Account(parserAccount.id, parserAccount.apikey, parserAccount.email, parserAccount.password, parserAccount.name, parserAccount.imagesize));
+			account.add(new Account(parserAccount.id, parserAccount.apikey, parserAccount.email, parserAccount.password, parserAccount.nickname, parserAccount.name, parserAccount.imagesize));
 	}
 
 	public List<Account> getAccount() {
@@ -97,6 +97,8 @@ public class Configuration {
 				account.get(id).email = value ;
 			else if (key.equals("password"))
 				account.get(id).password = value;
+			else if (key.equals("nickname"))
+				account.get(id).nickname = value;
 			else if (key.equals("name"))
 				account.get(id).name = value;
 			else if (key.equals("apikey"))
@@ -111,13 +113,19 @@ public class Configuration {
 		public String id;
 		public String email;
 		public String password;
+		public String nickname;
 		public String name;
 		public String apikey;
 		public String imagesize;
 		public int sequence;
 		
 		boolean isValid() {
-			return ! Utils.isEmpty(email) && ! Utils.isEmpty(password) && ! Utils.isEmpty(apikey);
+			if (Utils.isEmpty(apikey))
+				return false;
+			if (! Utils.isEmpty(nickname))
+				return true;
+			return (! Utils.isEmpty(email)
+					&& ! Utils.isEmpty(password));
 		}
 	}
 	
