@@ -33,6 +33,8 @@ import com.kallasoft.smugmug.api.json.v1_2_1.APIVersionConstants;
 import com.kallasoft.smugmug.api.json.v1_2_1.images.Get;
 import com.kallasoft.smugmug.api.json.v1_2_1.images.Get.GetResponse;
 
+import net.pms.external.smugmug.Account.SmugSize;
+
 public class AlbumFolder extends VirtualFolder {
 
 	private final String id;
@@ -73,9 +75,45 @@ public class AlbumFolder extends VirtualFolder {
 				new Function<Image, FeedItem>() {
 					@Override
 					public FeedItem apply(Image image) {
-						return new FeedItem(image.getFileName(), image.getLargeURL(), image.getThumbURL(), null, Format.IMAGE);
+						return new FeedItem(image.getFileName(), getBestURL(image), image.getThumbURL(), null, Format.IMAGE);
 					}})) {
 			addChild(feedItem);
 		}
+	}
+
+	String getBestURL(Image im) {
+		// System.err.println("thumb: " + im.getThumbURL());
+
+		SmugSize sz = SmugMugPlugin.getAccount(id).getSmugSize();
+		String url = null;
+		while (url == null)
+		{
+			switch(sz)
+			{
+				case X3LARGE:
+					url = im.getX3LargeURL();
+					break;
+				case X2LARGE:
+					url = im.getX2LargeURL();
+					break;
+				case XLARGE:
+					url = im.getXLargeURL();
+					break;
+				case LARGE:
+					url = im.getLargeURL();
+					break;
+				case MEDIUM:
+					url = im.getMediumURL();
+					break;
+				case SMALL:
+					url = im.getSmallURL();
+					return url;
+				default:
+					return url;
+			}
+			// sz++;
+			sz = SmugSize.values()[sz.ordinal() + 1];
+		}
+		return url;
 	}
 }

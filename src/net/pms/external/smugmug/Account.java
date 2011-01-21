@@ -29,12 +29,37 @@ import com.kallasoft.smugmug.api.json.v1_2_1.login.WithPassword.WithPasswordResp
 public class Account {
 
 	private static final long REFRESH_INTERVAL = 60 * 60 * 1000; // 60 minutes
+	public enum SmugSize {
+		// largest to smallest
+		X3LARGE, X2LARGE, XLARGE, LARGE, MEDIUM, SMALL, INVALID
+	}
+
+	static SmugSize getSmugSize(String size) {
+		if (size == null)
+			return SmugSize.MEDIUM;
+		else if ("x3large".equalsIgnoreCase(size))
+			return SmugSize.X3LARGE;
+		else if ("x2large".equalsIgnoreCase(size))
+			return SmugSize.X2LARGE;
+		else if ("xlarge".equalsIgnoreCase(size))
+			return SmugSize.XLARGE;
+		else if ("large".equalsIgnoreCase(size))
+			return SmugSize.LARGE;
+		else if ("medium".equalsIgnoreCase(size))
+			return SmugSize.MEDIUM;
+		else if ("small".equalsIgnoreCase(size))
+			return SmugSize.SMALL;
+		else 
+			return SmugSize.MEDIUM;
+	}
 	
 	final private String id;
 	final private String email;
 	final private String password;
 	final private String name;
 	final private String apikey;
+	final private String imagesize;
+	final private SmugSize smugsize;
 	
 	@Override
 	public String toString() {
@@ -51,12 +76,14 @@ public class Account {
 	private Date refresh = new Date(0L);
 	private WithPasswordResponse withPasswordResponse; 
 	
-	public Account(String id, String apikey, String email, String password, String name) {
+	public Account(String id, String apikey, String email, String password, String name, String imagesize) {
 		this.id = id;
 		this.email = email;
 		this.password = password;
 		this.name = name;
 		this.apikey = apikey;
+		this.imagesize = imagesize;
+		this.smugsize = getSmugSize(imagesize);
 	}
 	
 	public String getEmail() {
@@ -70,8 +97,17 @@ public class Account {
 	public String getName() {
 		return name == null ? getEmail() : name; 
 	}
+
 	public String getApikey() {
 		return apikey;
+	}
+
+	public String getImageSize() {
+		return imagesize;
+	}
+
+	public SmugSize getSmugSize() {
+		return smugsize;
 	}
 
 	public String getId() {
