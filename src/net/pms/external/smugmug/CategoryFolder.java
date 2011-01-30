@@ -20,11 +20,13 @@ package net.pms.external.smugmug;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import net.pms.dlna.virtual.VirtualFolder;
 
 import com.kallasoft.smugmug.api.json.entity.Album;
+import com.kallasoft.smugmug.api.json.entity.Category;
 
 public class CategoryFolder extends VirtualFolder {
 
@@ -64,5 +66,45 @@ public class CategoryFolder extends VirtualFolder {
 				addChild(new AlbumFolder(accountId, album.getID(), album.getAlbumKey(), album.getTitle()));
 			}
 		}
+	}
+
+	static List<CategoryFolder> getFolders(final String accountId, List<Album> albumList)
+	{
+		// categories
+		// Some albums in categories have subcategories, some don't.
+		// Sort them into our structures.
+		final CatListMap catMap = new CatListMap();
+		for (Album album : albumList) {
+			Cat cat;
+			// get or create the Cat representation
+			cat = catMap.get(album.getCategory().getName());
+			if (cat == null) {
+				cat = new Cat();
+				catMap.put(album.getCategory().getName(), cat);
+			}
+
+			// is a subcatagory specified?
+			Category subCat = album.getSubCategory();
+			if (subCat == null) {
+				cat.albums.add(album);
+			} else {
+				// get or create the subCat representation
+				String scName = subCat.getName();
+				Cat sub = cat.subCats.get(scName);
+				if (sub == null) {
+					sub = new Cat();
+					cat.subCats.put(scName, sub);
+				}
+
+				sub.albums.add(album);
+			}
+		}
+
+		List<CategoryFolder> folders = new ArrayList<CategoryFolder>();
+		for (Entry<String,Cat> e : catMap.entrySet()) {
+			folders.add(new CategoryFolder(accountId, e.getKey(), e.getValue().subCats, e.getValue().albums));
+		}
+
+		return folders;
 	}
 }

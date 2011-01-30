@@ -18,21 +18,16 @@
  */
 package net.pms.external.smugmug;
 
-import java.util.Map.Entry;
-
 import static net.pms.external.smugmug.SmugMugPlugin.getAccount;
 import net.pms.PMS;
 import net.pms.dlna.virtual.VirtualFolder;
 
 import com.kallasoft.smugmug.api.json.entity.Album;
-import com.kallasoft.smugmug.api.json.entity.Category;
 import com.kallasoft.smugmug.api.json.v1_2_1.APIVersionConstants;
 import com.kallasoft.smugmug.api.json.v1_2_1.albums.Get;
 import com.kallasoft.smugmug.api.json.v1_2_1.albums.Get.GetResponse;
 
-import net.pms.external.smugmug.CategoryFolder.AlbumList;
-import net.pms.external.smugmug.CategoryFolder.Cat;
-import net.pms.external.smugmug.CategoryFolder.CatListMap;
+import net.pms.external.smugmug.CategoryFolder;
 
 public class AccountFolder extends VirtualFolder {
 
@@ -47,7 +42,6 @@ public class AccountFolder extends VirtualFolder {
 	public void discoverChildren() {
 		addChild(new RecentAdditionsFolder(accountId));
 		Account account = getAccount(accountId);
-
 		Get get = new Get();
 		final GetResponse getResponse = get.execute(APIVersionConstants.UNSECURE_SERVER_URL, 
 				account.getApikey(), 
@@ -61,42 +55,15 @@ public class AccountFolder extends VirtualFolder {
 		}
 
 		// categories
-		// Some albums in categories have subcategories, some don't.
-		// Sort them into our structures.
-		final CatListMap catMap = new CatListMap();
-		for (Album album : getResponse.getAlbumList()) {
-			Cat cat;
-			// get or create the Cat representation
-			cat = catMap.get(album.getCategory().getName());
-			if (cat == null) {
-				cat = new Cat();
-				catMap.put(album.getCategory().getName(), cat);
-			}
-
-			// is a subcatagory specified?
-			Category subCat = album.getSubCategory();
-			if (subCat == null) {
-				cat.albums.add(album);
-			} else {
-				// get or create the subCat representation
-				String scName = subCat.getName();
-				Cat sub = cat.subCats.get(scName);
-				if (sub == null) {
-					sub = new Cat();
-					cat.subCats.put(scName, sub);
-				}
-
-				sub.albums.add(album);
-			}
-		}
-
 		addChild(new VirtualFolder("Categories", null) {
 			@Override
 			public void discoverChildren() {
 				super.discoverChildren();
-				for (Entry<String,Cat> e : catMap.entrySet()) {
-					addChild(new CategoryFolder(accountId, e.getKey(), e.getValue().subCats, e.getValue().albums));
+				for (CategoryFolder cf : CategoryFolder.getFolders(accountId, getResponse.getAlbumList())) {
+					addChild(cf);
 				}
+
+
 			}
 		});
 
