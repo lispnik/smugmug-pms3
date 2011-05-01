@@ -4,6 +4,7 @@
 	<property file="src/version.properties"/>
 	
 	<target name="prepare">
+        <echo>${pms3.home}</echo>
 		<mkdir dir="classes"/>
 		<mkdir dir="dist"/>
 	</target>
@@ -15,7 +16,7 @@
 	</target>		
 	
 	<path id="build.classpath">
-		<fileset dir="lib" includes="*.jar"/>
+		<fileset dir="lib" includes="**/*.jar"/>
 		<path location="${pms3.home}/pms.jar"/>
 	</path>
 	
@@ -38,6 +39,10 @@
     			<attribute name="SmugMug-PMS3-Version" value="${version}"/>
     		</manifest>
 		</jar>
+    </target>
+
+    <target name="deploy" depends="build">
+        <copy todir="${pms3.home}/plugins" file="dist/smugmug-pms3-${version}.jar/"/>
     </target>
 	
 	<target name="dist" depends="build">
